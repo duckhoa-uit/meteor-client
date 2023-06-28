@@ -1,0 +1,36 @@
+[package]
+name = "meteor-man"
+version = "0.0.0"
+description = "A Tauri App"
+authors = [ "you" ]
+license = ""
+repository = ""
+edition = "2021"
+
+[build-dependencies.tauri-build]
+version = "2.0.0-alpha.5"
+features = [ ]
+
+[dependencies]
+tauri-plugin-window = "2.0.0-alpha.0"
+serde_json = "1.0"
+
+  [dependencies.tauri]
+  version = "2.0.0-alpha.9"
+  features = [ ]
+
+  [dependencies.serde]
+  version = "1.0"
+  features = [ "derive" ]
+
+[features]
+custom-protocol = [ "tauri/custom-protocol" ]
+
+[profile.release]
+lto = true
+opt-level = "z"
+codegen-units = 1
+panic = "abort"
+strip = true
+debug = false
+

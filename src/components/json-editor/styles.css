@@ -1,0 +1,40 @@
+/* .ReactJSONEditor {
+  min-height: 250px;
+  height: 300px;
+}
+
+.ReactJSONEditor a.jsoneditor-url {
+  pointer-events: none;
+}
+
+.ReactJSONEditor > a.jsoneditor-url {
+  pointer-events: none;
+}
+
+.ReactJSONEditor div.jsoneditor-menu {
+  height: 35px;
+  color: #fff;
+  background-color: #848484;
+  border-bottom: 1px solid #848484;
+  margin: 0;
+  border: none;
+}
+
+.jsoneditor-tree {
+  background-color: rgba(245, 245, 245, 1);
+}
+
+.jsoneditor-tree {
+  background-color: rgba(245, 245, 245, 1);
+}
+
+div.jsoneditor td.jsoneditor-separator {
+  padding: 3px 0;
+  vertical-align: top;
+  color: darkgray;
+  background-color: #e5e5e5;
+}
+
+div.jsoneditor td.jsoneditor-separator {
+  background-color: transparent;
+} */
