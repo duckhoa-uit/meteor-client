@@ -274,7 +274,7 @@ const DdpEndpoint = ({
             className="ml-2 flex items-center gap-2"
           >
             {sendingRequest ? (
-              <LoadingDots />
+              <LoadingDots style="big"/>
             ) : (
               <Icons.send className="h-4 w-4" />
             )}

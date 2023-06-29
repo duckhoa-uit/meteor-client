@@ -1,12 +1,6 @@
-import {
-  forwardRef,
-  useImperativeHandle,
-  useMemo,
-  useRef,
-  useState,
-} from "react"
-import ws from "isomorphic-ws"
-import SimpleDDP from "simpleddp"
+import { forwardRef, useImperativeHandle, useMemo, useRef, useState } from "react";
+import ws from "isomorphic-ws";
+import SimpleDDP, { simpleDDPOptions } from "simpleddp"
 import { simpleDDPLogin } from "simpleddp-plugin-login"
 
 import {
@@ -41,6 +35,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select"
+import { Switch } from "./ui/switch"
 import { useToast } from "./ui/use-toast"
 
 type ServerConnectionProps = {}
@@ -80,21 +75,16 @@ const ServerConnection = forwardRef<ServerConnectionRef, ServerConnectionProps>(
       [connectionState]
     )
 
-    type ProtocolType = "ws" | "wss"
     const [serverConnection, setServerConnection] = useState<{
-      protocol: ProtocolType
-      host: string
-      port: string
-      path: string
+      endpoint: string
       reconnectInterval: number
       maxTimeout: number
+      autoReconnect: boolean
     }>({
-      protocol: "ws",
-      host: "localhost",
-      port: "3001",
-      path: "websocket",
+      endpoint: "",
       reconnectInterval: 5000,
       maxTimeout: 7000,
+      autoReconnect: false,
     })
 
     type AuthType = "none" | "username" | "email"
@@ -134,6 +124,7 @@ const ServerConnection = forwardRef<ServerConnectionRef, ServerConnectionProps>(
                 user,
                 password: authentication.password,
               })
+              setConnectionState("connected")
             } catch (error) {
               console.error("error authentication: ", error)
               meteorRef.current?.disconnect()
@@ -142,9 +133,8 @@ const ServerConnection = forwardRef<ServerConnectionRef, ServerConnectionProps>(
             }
           } else {
             console.warn("Connected without Authentication")
+            setConnectionState("connected")
           }
-
-          setConnectionState("connected")
         })
 
         meteorRef.current.on("disconnected", () => {
@@ -189,11 +179,7 @@ const ServerConnection = forwardRef<ServerConnectionRef, ServerConnectionProps>(
     const validateConnection = () => {
       // Validate connection logic
       let isCorrect = true
-      if (
-        !serverConnection.protocol ||
-        !serverConnection.host ||
-        !serverConnection.path
-      ) {
+      if (!serverConnection.endpoint) {
         toast({
           title: "Warning",
           description: "Please fill all data connection (host, etc)",
@@ -223,18 +209,18 @@ const ServerConnection = forwardRef<ServerConnectionRef, ServerConnectionProps>(
         if (validateConnection()) {
           setConnectionState("connecting")
 
-          const opts = {
-            endpoint: `${serverConnection.protocol}://${serverConnection.host}${
-              serverConnection.port ? `:${serverConnection.port}` : ""
-            }/${serverConnection.path}`,
+          const opts: simpleDDPOptions = {
+            endpoint: serverConnection.endpoint,
             SocketConstructor: ws,
             reconnectInterval: serverConnection.reconnectInterval,
             maxTimeout: serverConnection.maxTimeout,
+            autoReconnect: false,
+            // autoReconnect: serverConnection.autoReconnect,
             autoConnect: false,
-            autoReconnect: true, //TODO: Add to UI
           }
           meteorRef.current = new SimpleDDP(opts, [simpleDDPLogin])
           initializeListeners()
+
           meteorRef.current.connect()
         }
       } else {
@@ -255,28 +241,16 @@ const ServerConnection = forwardRef<ServerConnectionRef, ServerConnectionProps>(
     return (
       <div className="auth-wrapper flex">
         <Input
-          value={serverConnection.host}
+          value={serverConnection.endpoint}
           onChange={(e) =>
-            setServerConnection({ ...serverConnection, host: e.target.value })
+            setServerConnection({
+              ...serverConnection,
+              endpoint: e.target.value,
+            })
           }
-          placeholder="Host"
+          placeholder="Endpoint"
           disabled={meteorConnected}
         />
-        <div className="">
-          <Input
-            type="number"
-            value={serverConnection.port}
-            onChange={(e) =>
-              setServerConnection({
-                ...serverConnection,
-                port: e.target.value,
-              })
-            }
-            placeholder="Port (leave empty if don't have)"
-            disabled={meteorConnected}
-            className="min-w-[250px]"
-          />
-        </div>
         <div className="">
           <Select
             onValueChange={(value) =>
@@ -360,7 +334,11 @@ const ServerConnection = forwardRef<ServerConnectionRef, ServerConnectionProps>(
             disabled={connectionState === "connecting"}
             className="ml-2"
           >
-            {connectionState === "connecting" && <LoadingDots />}
+            {connectionState === "connecting" && (
+              <span className="mr-2 self-baseline">
+                <LoadingDots style="big" />
+              </span>
+            )}
             {connectionLabels[connectionState]}
           </Button>
         )}
@@ -378,47 +356,10 @@ const ServerConnection = forwardRef<ServerConnectionRef, ServerConnectionProps>(
             </DialogHeader>
 
             <form className="flex flex-col">
-              <div className="grid w-full items-center gap-1.5">
-                <Label htmlFor="email">Protocol</Label>
-                <Select
-                  onValueChange={(value) =>
-                    setServerConnection({
-                      ...serverConnection,
-                      protocol: value as ProtocolType,
-                    })
-                  }
-                  defaultValue={serverConnection.protocol}
-                >
-                  <SelectTrigger className="">
-                    <SelectValue placeholder="Port" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {protocols.map((item) => (
-                      <SelectItem key={item.name} value={item.name}>
-                        {item.description}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="mt-3 grid w-full items-center gap-1.5">
-                <Label htmlFor="email">Path</Label>
-                <Input
-                  value={serverConnection.path}
-                  onChange={(e) =>
-                    setServerConnection({
-                      ...serverConnection,
-                      path: e.target.value,
-                    })
-                  }
-                  placeholder="Path"
-                  disabled={meteorConnected}
-                />
-              </div>
               <div className="mt-3 grid w-full items-center gap-1.5">
                 <Label htmlFor="email">Reconnect interval</Label>
                 <Input
+                  type="number"
                   value={serverConnection.reconnectInterval}
                   onChange={(e) =>
                     setServerConnection({
@@ -433,6 +374,7 @@ const ServerConnection = forwardRef<ServerConnectionRef, ServerConnectionProps>(
               <div className="mt-3 grid w-full items-center gap-1.5">
                 <Label htmlFor="email">Max Timeout</Label>
                 <Input
+                  type="number"
                   value={serverConnection.maxTimeout}
                   onChange={(e) =>
                     setServerConnection({
@@ -443,6 +385,19 @@ const ServerConnection = forwardRef<ServerConnectionRef, ServerConnectionProps>(
                   placeholder="Max Timeout"
                   disabled={meteorConnected}
                 />
+              </div>
+              <div className="mt-3 flex items-center space-x-2">
+                <Switch
+                  id="auto-reconnect"
+                  checked={serverConnection.autoReconnect}
+                  onCheckedChange={(value) =>
+                    setServerConnection({
+                      ...serverConnection,
+                      autoReconnect: value,
+                    })
+                  }
+                />
+                <Label htmlFor="auto-reconnect">Auto Reconnect</Label>
               </div>
             </form>
             <DialogFooter>

@@ -1,4 +1,5 @@
-import LayoutSPA from "./components/layout"
+import LayoutSPA from "./components/layout";
+import { Menu } from "./components/menu"
 import { TailwindIndicator } from "./components/tailwind-indicator"
 import { ThemeProvider } from "./components/theme-provider"
 import { Toaster } from "./components/ui/toaster"
@@ -16,7 +17,6 @@ function App() {
             // "scrollbar scrollbar-track-transparent scrollbar-thumb-accent scrollbar-thumb-rounded-md"
           )}
         >
-          {/* <DashboardPage /> */}
           <LayoutSPA />
         </div>
       </div>

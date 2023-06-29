@@ -5,6 +5,7 @@ import {
   ChevronLeft,
   ChevronRight,
   ClipboardCheck,
+  Code2,
   Copy,
   CreditCard,
   Expand,
@@ -71,6 +72,7 @@ export const Icons = {
   laptop: Laptop,
   expand: Expand,
   send: Send,
+  code: Code2,
   gitHub: (props: LucideProps) => (
     <svg viewBox="0 0 438.549 438.549" {...props}>
       <path

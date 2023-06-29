@@ -1,12 +1,15 @@
-import React, { useEffect, useState } from "react"
-import useDdpConnectionStore from "@/store"
-import { DdpConnection } from "@/store/types"
+import React, { useEffect, useState } from "react";
+import useDdpConnectionStore from "@/store";
+import { DdpConnection } from "@/store/types";
+
+
 
 // import HeaderView from './shared/HeaderView';
 // import AsideView from './shared/AsideView';
 
-import CloseableTabs from "../closeable-tabs"
-import Home from "../home"
+import CloseableTabs from "../closeable-tabs";
+import Home from "../home";
+
 
 const LayoutSPA: React.FC = () => {
   const {
@@ -24,8 +27,10 @@ const LayoutSPA: React.FC = () => {
   const [connectionTab, setConnectionTab] = useState("")
 
   useEffect(() => {
-    setConnectionTab(ddpConnections[0].title)
-  }, [])
+    if (!connectionTab && ddpConnections.length) {
+      setConnectionTab(ddpConnections[0].title)
+    }
+  }, [ddpConnections])
 
   const handleAddDdpConnection = async () => {
     addConnection()

@@ -38,14 +38,13 @@ export function Menu() {
   return (
     <Menubar className="rounded-none border-b border-none pl-2 lg:pl-3">
       {/* App Logo */}
-      <MenubarMenu>
-        <div className="inline-flex h-fit w-fit items-center text-cyan-500">
-          <Sailboat className="h-5 w-5" />
-        </div>
-      </MenubarMenu>
 
       <MenubarMenu>
-        <MenubarTrigger className="font-bold">App</MenubarTrigger>
+        <MenubarTrigger className="font-semibold">
+        <div className="inline-flex h-fit w-fit items-center text-orange-700">
+          <Icons.code className="h-5 w-5" />
+        </div>
+        </MenubarTrigger>
         <MenubarContent>
           <MenubarItem>About App</MenubarItem>
           <MenubarSeparator />
