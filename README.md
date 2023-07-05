@@ -1,7 +1,40 @@
-# Tauri + React + Typescript
+<div align="center">
 
-This template should help get you started developing with Tauri, React and Typescript in Vite.
+<img src="./src-tauri/icons/icon.png" alt="" height="150px" />
 
-## Recommended IDE Setup
+<!-- # [GitLight](https://gitlight.app) -->
+Meteor Client
 
-- [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+An DDP Client for Meteor framework
+
+![Latest release](https://img.shields.io/github/v/release/duckhoa-uit/meteor-client?color=%23FA6000FF&label=Latest%20release)
+
+</div>
+
+![Meteor Client](./src/assets/images/Screenshot.png)
+
+---
+
+## About
+
+An DDP Client for tesing Meteor framework and ~~stored into collection~~ (not yet). Available on **MacOS**, **Windows**, **Linux** and in the **browser**. Free and open-source.
+
+> **Warning**: Meteor Client is currently in development so bugs may be present
+
+## Features
+
+- [x] Connect Meteor backend
+- [x] Call methods
+- [ ] Subscribe endpoint
+- [ ] Support multiple tabs without unmounting
+- [ ] Store connected connection into collections
+- [ ] Import/Export collections
+- [ ] Support documents for each endpoint
+
+## Contributing
+
+[How to contribute](./CONTRIBUTING.md)
+
+## License
+
+[MIT](./LICENSE) © Duc Khoa
