@@ -31,11 +31,13 @@ type DdpEndpointProps = {
   connection: ServerConnectionRef | null
   ddpConnection: DdpConnection
   endpoint: Endpoint
+  isActive?: boolean
 }
 const DdpEndpoint = ({
   connection,
   ddpConnection,
   endpoint,
+  isActive = false,
 }: DdpEndpointProps) => {
   const { saveNameOfOpenEndpoint } = useDdpConnectionStore.getState()
 
@@ -211,7 +213,7 @@ const DdpEndpoint = ({
   }
 
   return (
-    <div className="">
+    <div className={isActive ? "block" : "hidden"}>
       <div className="flex flex-col">
         <div className="flex pl-3 pt-2">
           {/* TODO: add modal to read/write documentation */}
@@ -274,7 +276,7 @@ const DdpEndpoint = ({
             className="ml-2 flex items-center gap-2"
           >
             {sendingRequest ? (
-              <LoadingDots style="big"/>
+              <LoadingDots style="big" />
             ) : (
               <Icons.send className="h-4 w-4" />
             )}

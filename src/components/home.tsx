@@ -1,6 +1,8 @@
-import React, { useEffect, useRef, useState } from "react"
+import React, { useCallback, useEffect, useRef, useState } from "react"
 import useDdpConnectionStore from "@/store"
 import { DdpConnection, Endpoint } from "@/store/types"
+
+import { cn } from "@/lib/utils"
 
 import CloseableTabs from "./closeable-tabs"
 import DdpEndpoint from "./ddp-client/ddp-endpoint"
@@ -8,8 +10,9 @@ import ServerConnection, { ServerConnectionRef } from "./server-connection"
 
 interface HomeProps {
   connection: DdpConnection
+  selected: boolean
 }
-const Home: React.FC<HomeProps> = ({ connection }) => {
+const Home: React.FC<HomeProps> = ({ connection, selected = false }) => {
   const {
     initializeOpenEndpoints,
     addOpenEndpointToConnection,
@@ -44,7 +47,7 @@ const Home: React.FC<HomeProps> = ({ connection }) => {
 
   useEffect(() => {
     // Initialize open endpoints when component is mounted
-    initializeOpenEndpoints(connection.title)
+    // initializeOpenEndpoints(connection.title)
 
     setEndpointTab(connection.openEndpoints[0].id)
   }, [])
@@ -57,75 +60,34 @@ const Home: React.FC<HomeProps> = ({ connection }) => {
     removeOpenEndpointOfConnection(connection.title, endpoint.id)
   }
 
-  // TODO: add auto focus
-  // useEffect(() => {
-  //   const responseView = document.querySelectorAll(
-  //     ".ace-jsoneditor .ace_text-input"
-  //   )[0]
-  //   if (responseView) {
-  //     responseView.focus()
-  //   }
-  // }, [endpointTab])
+  const getTabContent = useCallback(
+    (endpoint: Endpoint, isSelected: boolean) => (
+      <DdpEndpoint
+        key={endpoint.id}
+        isActive={isSelected}
+        connection={serverRef.current}
+        ddpConnection={connection}
+        endpoint={endpoint}
+      />
+    ),
+    []
+  )
 
   return (
-    <div className="h-[calc(100vh-120px)]">
+    <div className={cn("h-[calc(100vh-120px)]", selected ? null : "hidden")}>
       <ServerConnection ref={serverRef} />
       <CloseableTabs
-        containerClassName="mt-5"
+        containerClassName={cn("mt-5")}
         tabKey={endpointTab}
         tabs={connection.openEndpoints}
         isTabSelected={(item) => endpointTab === item.id}
         getTabTitle={(tab) => tab.title}
-        getTabContent={() => {
-          const endpoint = connection.openEndpoints.find(
-            (_) => _.id === endpointTab
-          )
-          if (!endpoint) return <></>
-
-          return (
-            <DdpEndpoint
-              connection={serverRef.current}
-              ddpConnection={connection}
-              endpoint={endpoint}
-            />
-          )
-        }}
+        getTabContent={getTabContent}
         onUpdateTabs={() => {}}
         onSelectTab={(tab) => setEndpointTab(tab.id)}
         onRemoveTab={(tab) => handleRemoveEndpoint(tab)}
         onAddTab={handleAddEndpoint}
       />
-      {/* <Tabs value={endpointTab} className="mt-5">
-        <TabsList>
-          {connection.openEndpoints.map((endpoint, idx) => (
-            <TabsTrigger
-              value={endpoint.id}
-              key={`${endpoint.id}_${idx}`}
-              className="endpoint-tab"
-              onClick={() => setEndpointTab(endpoint.id)}
-            >
-              {endpoint.title}
-              <Icons.close
-                className="ml-2 h-4 w-4 transition hover:text-primary"
-                onClick={() => handleRemoveEndpoint(endpoint)}
-              />
-            </TabsTrigger>
-          ))}
-          <Button variant={"link"} onClick={handleAddEndpoint}>
-            <Icons.add />
-          </Button>
-        </TabsList>
-
-        {connection.openEndpoints.map((endpoint) => (
-          <TabsContent key={endpoint.id} value={endpointTab}>
-            <DdpEndpoint
-              connection={serverRef.current}
-              ddpConnection={connection}
-              endpoint={endpoint}
-            />
-          </TabsContent>
-        ))}
-      </Tabs> */}
     </div>
   )
 }

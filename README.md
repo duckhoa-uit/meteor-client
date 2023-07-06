@@ -26,10 +26,13 @@ An DDP Client for tesing Meteor framework and ~~stored into collection~~ (not ye
 - [x] Connect Meteor backend
 - [x] Call methods
 - [ ] Subscribe endpoint
-- [ ] Support multiple tabs without unmounting
+- [x] Support multiple tabs without unmounting
+- [ ] Add animation when switch between tabs
 - [ ] Store connected connection into collections
 - [ ] Import/Export collections
 - [ ] Support documents for each endpoint
+- [ ] Support shortcuts
+- [ ] Persist state
 
 ## Contributing
 

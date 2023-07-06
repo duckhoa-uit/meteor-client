@@ -9,7 +9,8 @@
     "format": "npx prettier --write . --ignore-path .gitignore ",
     "taze": "taze major -I",
     "taze:minor": "taze minor -w",
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "tauri:dev": "tauri dev"
   },
   "dependencies": {
     "@radix-ui/react-accessible-icon": "^1.0.3",
@@ -57,12 +58,15 @@
     "react-day-picker": "^8.7.1",
     "react-dom": "^18.2.0",
     "react-json-editor-ajrm": "^2.5.14",
+    "react-tabs": "^6.0.1",
     "recharts": "^2.6.2",
     "recoil": "^0.7.7",
     "simpleddp": "^2.2.4",
     "simpleddp-plugin-login": "^4.0.2",
     "tailwind-scrollbar": "^3.0.4",
     "tailwindcss-animate": "^1.0.5",
+    "tauri-plugin-store-api": "github:tauri-apps/tauri-plugin-store#v1",
+    "tinykeys": "^2.1.0",
     "uuid": "^9.0.0",
     "zustand": "^4.3.8"
   },

@@ -1,15 +1,15 @@
-import cloneDeep from "lodash/cloneDeep"
-import { create } from "zustand"
-import { devtools, persist } from "zustand/middleware"
+import cloneDeep from "lodash/cloneDeep";
+import { create } from "zustand";
+import { devtools, persist } from "zustand/middleware";
 
-import { removeItemAtIndex, replaceItemAtIndex } from "@/lib/utils"
 
-import {
-  DdpConnection,
-  DdpConnectionCollection,
-  EndpointArg,
-  StateProps,
-} from "./types"
+
+import { removeItemAtIndex, replaceItemAtIndex } from "@/lib/utils";
+
+
+
+import { DdpConnection, DdpConnectionCollection, EndpointArg, StateProps } from "./types";
+
 
 const useDdpConnectionStore = create<StateProps>((set, get) => ({
   ddpConnections: [],
@@ -37,10 +37,6 @@ const useDdpConnectionStore = create<StateProps>((set, get) => ({
   },
   addConnection: () => {
     const connections = get().ddpConnections
-    console.log(
-      "🚀 ~ file: index.ts:40 ~ useDdpConnectionStore ~ connections:",
-      connections
-    )
 
     let i = 1
     let connectionName = "Connection " + i
