@@ -1,7 +1,9 @@
 import { forwardRef, useImperativeHandle, useMemo, useRef, useState } from "react";
 import ws from "isomorphic-ws";
-import SimpleDDP, { simpleDDPOptions } from "simpleddp"
-import { simpleDDPLogin } from "simpleddp-plugin-login"
+import SimpleDDP, { simpleDDPOptions } from "simpleddp";
+import { simpleDDPLogin } from "simpleddp-plugin-login";
+
+
 
 import {
   AlertDialog,
@@ -111,7 +113,8 @@ const ServerConnection = forwardRef<ServerConnectionRef, ServerConnectionProps>(
       if (meteorRef.current) {
         // Initialize listeners logic
         meteorRef.current.on("connected", async () => {
-          console.info("Connected to the server")
+          toast({ title: `Connected to ${serverConnection.endpoint}` })
+
           if (authentication.type !== "none") {
             let user = {}
             if (authentication.type === "username") {
@@ -183,6 +186,18 @@ const ServerConnection = forwardRef<ServerConnectionRef, ServerConnectionProps>(
         toast({
           title: "Warning",
           description: "Please fill all data connection (host, etc)",
+          variant: "destructive",
+        })
+        isCorrect = false
+      }
+      if (
+        !new RegExp(/\b(?:wss|ws)s?:\/\/\S*[^\s."]/gm).test(
+          serverConnection.endpoint
+        )
+      ) {
+        toast({
+          title: "Warning",
+          description: "Please enter valid websocket URL",
           variant: "destructive",
         })
         isCorrect = false
