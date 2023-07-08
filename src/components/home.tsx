@@ -18,6 +18,10 @@ const Home: React.FC<HomeProps> = ({ connection, selected = false }) => {
     addOpenEndpointToConnection,
     removeOpenEndpointOfConnection,
   } = useDdpConnectionStore.getState()
+  if (connection.openEndpoints.length === 0) {
+    // Initialize open endpoints when component is mounted
+    initializeOpenEndpoints(connection.title)
+  }
 
   const serverRef = useRef<ServerConnectionRef>(null)
 
@@ -45,12 +49,16 @@ const Home: React.FC<HomeProps> = ({ connection, selected = false }) => {
   //   }
   // }, [connection.openEndpoints])
 
-  useEffect(() => {
-    // Initialize open endpoints when component is mounted
-    // initializeOpenEndpoints(connection.title)
+  // useEffect(() => {
+  //   // Initialize open endpoints when component is mounted
+  //   initializeOpenEndpoints(connection.title)
+  // }, [])
 
-    setEndpointTab(connection.openEndpoints[0].id)
-  }, [])
+  useEffect(() => {
+    if (!endpointTab && connection.openEndpoints.length) {
+      setEndpointTab(connection.openEndpoints[0].id)
+    }
+  }, [connection.openEndpoints])
 
   const handleAddEndpoint = () => {
     addOpenEndpointToConnection(connection.title)
@@ -74,16 +82,21 @@ const Home: React.FC<HomeProps> = ({ connection, selected = false }) => {
   )
 
   return (
-    <div className={cn("h-[calc(100vh-120px)]", selected ? null : "hidden")}>
+    <div
+      className={cn(
+        "h-[calc(100vh-120px)]",
+        connection.title,
+        selected ? null : "hidden"
+      )}
+    >
       <ServerConnection ref={serverRef} />
       <CloseableTabs
         containerClassName={cn("mt-5")}
         tabKey={endpointTab}
         tabs={connection.openEndpoints}
         isTabSelected={(item) => endpointTab === item.id}
-        getTabTitle={(tab) => tab.title}
+        getTabTitle={(tab) => tab.title!}
         getTabContent={getTabContent}
-        onUpdateTabs={() => {}}
         onSelectTab={(tab) => setEndpointTab(tab.id)}
         onRemoveTab={(tab) => handleRemoveEndpoint(tab)}
         onAddTab={handleAddEndpoint}

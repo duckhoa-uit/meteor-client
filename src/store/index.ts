@@ -1,15 +1,17 @@
-import cloneDeep from "lodash/cloneDeep";
-import { create } from "zustand";
-import { devtools, persist } from "zustand/middleware";
+import cloneDeep from "lodash/cloneDeep"
+import { create } from "zustand"
+import { devtools, persist } from "zustand/middleware"
 
+import { removeItemAtIndex, replaceItemAtIndex } from "@/lib/utils"
+import { TreeFileType } from "@/components/ui/tree"
 
-
-import { removeItemAtIndex, replaceItemAtIndex } from "@/lib/utils";
-
-
-
-import { DdpConnection, DdpConnectionCollection, EndpointArg, StateProps } from "./types";
-
+import {
+  Collection,
+  DdpConnection,
+  Endpoint,
+  EndpointArg,
+  StateProps,
+} from "./types"
 
 const useDdpConnectionStore = create<StateProps>((set, get) => ({
   ddpConnections: [],
@@ -26,6 +28,7 @@ const useDdpConnectionStore = create<StateProps>((set, get) => ({
       openEndpoints: [
         {
           id,
+          name: "",
           title: endpointName,
           description: null,
           args: [],
@@ -56,6 +59,7 @@ const useDdpConnectionStore = create<StateProps>((set, get) => ({
       openEndpoints: [
         {
           id,
+          name: "",
           title: endpointName,
           description: null,
           args: [],
@@ -68,7 +72,7 @@ const useDdpConnectionStore = create<StateProps>((set, get) => ({
   removeConnection: (connectionName: string) => {
     const connections = get().ddpConnections
 
-    if (connections.length > 1) {
+    if (connections.length > 0) {
       const connectionIndex = connections.findIndex(
         (ddpConnection) => ddpConnection.title === connectionName
       )
@@ -80,13 +84,10 @@ const useDdpConnectionStore = create<StateProps>((set, get) => ({
       set({ ddpConnections: removeItemAtIndex(connections, connectionIndex) })
     }
   },
-  addCollectionToConnection: (
-    connectionName: string,
-    collection: DdpConnectionCollection
-  ) => {
+  addCollectionToConnection: (connectionName, collection) => {
     const connections = get().ddpConnections
 
-    if (connections.length > 1) {
+    if (connections.length > 0) {
       const connectionIndex = connections.findIndex(
         (ddpConnection) => ddpConnection.title === connectionName
       )
@@ -107,13 +108,10 @@ const useDdpConnectionStore = create<StateProps>((set, get) => ({
       })
     }
   },
-  removeCollectionOfConnection: (
-    connectionName: string,
-    collectionIndex: number
-  ) => {
+  removeCollectionOfConnection: ({ connectionName, collectionIndex }) => {
     const connections = get().ddpConnections
 
-    if (connections.length > 1) {
+    if (connections.length > 0) {
       const connectionIndex = connections.findIndex(
         (ddpConnection) => ddpConnection.title === connectionName
       )
@@ -132,6 +130,145 @@ const useDdpConnectionStore = create<StateProps>((set, get) => ({
           foundItem
         ),
       })
+    }
+  },
+  addElementToCollection: ({ connectionName, collectionName, element }) => {
+    const connections = get().ddpConnections
+
+    if (connections.length > 0) {
+      const connectionIndex = connections.findIndex(
+        (ddpConnection) => ddpConnection.title === connectionName
+      )
+
+      if (connectionIndex < 0 || connectionIndex >= connections.length) {
+        throw new Error("Could not add item. Index out of bounds.")
+      }
+      const connection = cloneDeep(connections[connectionIndex])
+
+      ;(connection.collections || [])
+        .find((collection) => collection.name === collectionName)
+        ?.children?.push({
+          ...element,
+          id: `${collectionName}-${element.name}`,
+        })
+
+      set({
+        ddpConnections: replaceItemAtIndex(
+          connections,
+          connectionIndex,
+          connection
+        ),
+      })
+    }
+  },
+  addElementToFolder: ({
+    connectionName,
+    collectionName,
+    folderNames,
+    element,
+  }) => {
+    const connections = get().ddpConnections
+
+    if (connections.length > 0) {
+      const connectionIndex = connections.findIndex(
+        (ddpConnection) => ddpConnection.title === connectionName
+      )
+      if (connectionIndex < 0 || connectionIndex >= connections.length) {
+        throw new Error("Could not add item. Index out of bounds.")
+      }
+
+      const connection = cloneDeep(connections[connectionIndex])
+
+      let folder: TreeFileType | undefined = connection.collections.find(
+        (collection) => collection.name === collectionName
+      )
+
+      if (folder) {
+        const folderIndexes = []
+        for (
+          let folderLevel = 0;
+          folderLevel < folderNames.length;
+          folderLevel++
+        ) {
+          if (!folder.children) break
+
+          const folderIndex: number | undefined = folder.children.findIndex(
+            (child) =>
+              child.type === "directory" &&
+              child.name === folderNames[folderLevel]
+          )
+          if (folderIndex !== undefined) {
+            folderIndexes.push(folderIndex)
+            folder = folder.children[folderIndex]
+          }
+        }
+
+        folder.children = [
+          ...(folder.children || []),
+          {
+            ...element,
+            id: `${collectionName}-${folderIndexes
+              .toString()
+              .replaceAll(",", "")}-${element.name}`,
+          },
+        ]
+
+        set({
+          ddpConnections: replaceItemAtIndex(
+            connections,
+            connectionIndex,
+            connection
+          ),
+        })
+      }
+    }
+  },
+  removeElementFromCollection: ({
+    connectionName,
+    collectionName,
+    itemNames,
+    element,
+  }) => {
+    const connections = get().ddpConnections
+
+    if (connections.length > 0) {
+      const connectionIndex = connections.findIndex(
+        (ddpConnection) => ddpConnection.title === connectionName
+      )
+      if (connectionIndex < 0 || connectionIndex >= connections.length) {
+        throw new Error("Could not add item. Index out of bounds.")
+      }
+
+      const connection = cloneDeep(connections[connectionIndex])
+
+      let collection: TreeFileType | undefined = connection.collections.find(
+        (collection) => collection.name === collectionName
+      )
+
+      if (collection) {
+        for (let itemLevel = 0; itemLevel < itemNames.length; itemLevel++) {
+          if (!collection) break
+          collection = collection.children?.find(
+            (child) =>
+              child.type === "directory" && child.name === itemNames[itemLevel]
+          )
+        }
+
+        const elementIndex = collection?.children?.findIndex(
+          (child) => child.id === element.id
+        )
+        if (elementIndex !== undefined && collection) {
+          collection.children?.splice(elementIndex, 1)
+        }
+
+        set({
+          ddpConnections: replaceItemAtIndex(
+            connections,
+            connectionIndex,
+            connection
+          ),
+        })
+      }
     }
   },
 
@@ -153,6 +290,7 @@ const useDdpConnectionStore = create<StateProps>((set, get) => ({
         newConnection.openEndpoints = [
           {
             id,
+            name: "",
             title: endpointName,
             description: null,
             args: [],
@@ -194,6 +332,7 @@ const useDdpConnectionStore = create<StateProps>((set, get) => ({
       const newConnection = cloneDeep(connection)
       newConnection.openEndpoints.push({
         id,
+        name: "",
         title: endpointName,
         description: null,
         args: [],
@@ -346,6 +485,42 @@ const useDdpConnectionStore = create<StateProps>((set, get) => ({
             connections,
             connectionIndex,
             oldConnection
+          ),
+        })
+      }
+    }
+  },
+
+  openEndpointFromCollection: ({
+    connectionName,
+    endpoint,
+  }: {
+    connectionName: string
+    endpoint: Endpoint
+  }) => {
+    const connections = get().ddpConnections
+    const connectionIndex = connections.findIndex(
+      (ddpConnection) => ddpConnection.title === connectionName
+    )
+
+    if (connectionIndex >= 0) {
+      const connection = connections[connectionIndex]
+      if (
+        !connection.openEndpoints.find(
+          (openEndpoint) => openEndpoint.id === endpoint.id
+        )
+      ) {
+        const newConnection = cloneDeep(connection)
+        newConnection.openEndpoints.push({
+          ...endpoint,
+          title: endpoint.name ?? "New connection",
+        })
+
+        set({
+          ddpConnections: replaceItemAtIndex(
+            connections,
+            connectionIndex,
+            newConnection
           ),
         })
       }

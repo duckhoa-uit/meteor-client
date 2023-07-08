@@ -15,14 +15,7 @@ const MethodResponse = forwardRef<MethodResponseRef, MethodResponseProps>(
   (props, ref) => {
     const [response, setResponse] = useState<any>("")
     const [elapsedTime, setElapsedTime] = useState<string | null>(null)
-    const [jsonEditor, setJsonEditor] = useState<JSONEditor | null>(null)
 
-    useEffect(() => {
-      if (jsonEditor) {
-        // TODO: set options
-        // jsonEditor.setOptions({ maxLines: 10000 })
-      }
-    }, [jsonEditor])
 
     const formattedElapsedTime = (elapsedTime: number) => {
       if (elapsedTime < 1000) {
@@ -37,11 +30,6 @@ const MethodResponse = forwardRef<MethodResponseRef, MethodResponseProps>(
     useImperativeHandle(ref, () => {
       return {
         loadResponse: (response: any, elapsedTime: number) => {
-          console.log(
-            "🚀 ~ file: method-response.tsx:56 ~ useImperativeHandle ~ response:",
-            response
-          )
-
           setElapsedTime(formattedElapsedTime(elapsedTime))
 
           if (response === undefined) {
@@ -51,41 +39,13 @@ const MethodResponse = forwardRef<MethodResponseRef, MethodResponseProps>(
           } else {
             setResponse(response)
           }
-
-          if (jsonEditor) {
-            // TODO: set options
-            // jsonEditor.setOptions({ maxLines: 10000 })
-          }
         },
       }
     })
 
-    useEffect(() => {
-      // const editorContainer = document.getElementById("editorResponse")
-      // if (editorContainer) {
-      //   const options: JSONEditorOptions = {
-      //     mode: "code",
-      //     modes: ["code", "tree", "text", "view"],
-      //     onError: function (error) {
-      //       alert(error)
-      //     },
-      //     onChange: function () {
-      //       // handle editor value change
-      //     },
-      //   }
-      //   const editor = new JSONEditor(editorContainer, options)
-      //   setJsonEditor(editor)
-      // }
-      // return () => {
-      //   if (jsonEditor) {
-      //     jsonEditor.destroy()
-      //   }
-      // }
-    }, [])
-
     return (
-      <div className="relative h-full w-full overflow-auto">
-        <div className="absolute top-[1px] z-10 flex w-full justify-between ">
+      <div className="relative h-full px-3 w-full overflow-auto">
+        <div className="absolute top-[1px] left-0 px-3 z-10 flex w-full justify-between ">
           <p className="text-sm leading-7 text-muted-foreground [&:not(:first-child)]:mt-6">
             Response
           </p>

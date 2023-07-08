@@ -80,7 +80,9 @@ const Arguments = forwardRef<ArgumentsRef, ArgumentsProps>(
     ])
 
     useEffect(() => {
-      const endpointArgs = JSON.parse(JSON.stringify(endpoint.args))
+      const endpointArgs = JSON.parse(
+        JSON.stringify(endpoint.args)
+      ) as EndpointArg[]
       setArgs((prevArgs) => [...endpointArgs, ...prevArgs])
     }, [])
 
@@ -126,7 +128,7 @@ const Arguments = forwardRef<ArgumentsRef, ArgumentsProps>(
     }
 
     const autoSaveArg = (index: number) => {
-      const arg = JSON.parse(JSON.stringify(args[index]))
+      const arg = JSON.parse(JSON.stringify(args[index])) as EndpointArg
       saveArgOfOpenEndpoint({
         connectionName: connection.title,
         openEndpointId: endpoint.id,
@@ -136,7 +138,7 @@ const Arguments = forwardRef<ArgumentsRef, ArgumentsProps>(
     }
 
     const saveArgOfEndpoint = (index: number) => {
-      const arg = JSON.parse(JSON.stringify(args[index]))
+      const arg = JSON.parse(JSON.stringify(args[index])) as EndpointArg
 
       saveArgOfOpenEndpoint({
         connectionName: connection.title,
@@ -147,7 +149,7 @@ const Arguments = forwardRef<ArgumentsRef, ArgumentsProps>(
     }
 
     return (
-      <div className="mb-1 mt-2 h-full w-full overflow-auto">
+      <div className="mb-1 mt-2 h-full w-full overflow-auto px-3">
         <p className="text-sm text-muted-foreground">Params</p>
         <Table>
           <TableHeader>

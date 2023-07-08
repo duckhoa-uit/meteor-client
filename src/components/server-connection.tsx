@@ -254,7 +254,7 @@ const ServerConnection = forwardRef<ServerConnectionRef, ServerConnectionProps>(
     }
 
     return (
-      <div className="auth-wrapper flex">
+      <div className="auth-wrapper flex px-3 pt-1">
         <Input
           value={serverConnection.endpoint}
           onChange={(e) =>

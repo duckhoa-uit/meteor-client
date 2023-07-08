@@ -1,3 +1,7 @@
+import { TreeFileType } from "@/components/ui/tree"
+
+import { FileTreeValueType, TreeFile } from "./../components/ui/tree/types"
+
 export type StateProps = {
   ddpConnections: DdpConnection[]
   updateDdpConnections: (ddpConnections: DdpConnection[]) => void
@@ -6,12 +10,29 @@ export type StateProps = {
   removeConnection: (connectionName: string) => void
   addCollectionToConnection: (
     connectionName: string,
-    collection: DdpConnectionCollection
+    collection: Collection
   ) => void
   removeCollectionOfConnection: (
-    connectionName: string,
-    collectionIndex: number
+    args:{connectionName: string,
+    collectionIndex: number}
   ) => void
+  addElementToCollection: (args: {
+    connectionName: string
+    collectionName: string
+    element: TreeFileType
+  }) => void
+  addElementToFolder: (args: {
+    connectionName: string
+    collectionName: string
+    folderNames: string[]
+    element: TreeFileType
+  }) => void
+  removeElementFromCollection: (args: {
+    connectionName: string
+    collectionName: string
+    itemNames: string[]
+    element: TreeFileType
+  }) => void
   initializeOpenEndpoints: (connectionName: string) => void
   addOpenEndpointToConnection: (connectionName: string) => void
   removeOpenEndpointOfConnection: (
@@ -49,6 +70,13 @@ export type StateProps = {
     openEndpointId: string
     argIndex: number
   }) => void
+  openEndpointFromCollection: ({
+    connectionName,
+    endpoint,
+  }: {
+    connectionName: string
+    endpoint: Endpoint
+  }) => void
 }
 
 export type ArgumentType =
@@ -70,20 +98,22 @@ export type EndpointArg = {
 }
 export type Endpoint = {
   id: string
-  title: string
-  name?: string
+  title?: string
+  name: string
   description: string | null
   args: EndpointArg[]
   endpointType?: endpointType
 }
 
-export type DdpConnectionCollection = {
+export type Collection = {
   id: string
   name: string
-}
+  description?: string
+  children: Array<TreeFile>
+} & TreeFile
 
 export type DdpConnection = {
   title: string
-  collections: DdpConnectionCollection[]
+  collections: Collection[]
   openEndpoints: Endpoint[]
 }

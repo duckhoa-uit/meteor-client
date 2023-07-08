@@ -1,7 +1,11 @@
 import React, { useCallback, useEffect, useState } from "react"
 import useDdpConnectionStore from "@/store"
 import { DdpConnection } from "@/store/types"
+import { Allotment } from "allotment"
 
+import { cn } from "@/lib/utils"
+
+import AsideView from "../aside-view"
 // import HeaderView from './shared/HeaderView';
 // import AsideView from './shared/AsideView';
 
@@ -42,21 +46,34 @@ const LayoutSPA: React.FC = () => {
 
   const getTabContent = useCallback(
     (tab: DdpConnection, isSelected: boolean) => (
-      <Home key={tab.title} connection={tab} selected={isSelected} />
+      <Allotment
+        className={cn(isSelected ? "h-[calc(100vh)]" : null)}
+        key={tab.title}
+        vertical={false}
+      >
+        <Allotment.Pane preferredSize={"25%"}>
+          <AsideView connection={tab} />
+        </Allotment.Pane>
+        <Allotment.Pane preferredSize={"75%"} snap>
+          <Home connection={tab} selected={isSelected} />
+        </Allotment.Pane>
+      </Allotment>
     ),
-    []
+    [connectionTab]
   )
-
+  const isTabSelected = useCallback(
+    (item: DdpConnection) => connectionTab === item.title,
+    [connectionTab]
+  )
   return (
     <div className="h-screen overflow-x-auto overflow-y-hidden">
-      <div className="px-3">
+      <div className="">
         <CloseableTabs
           tabKey={connectionTab}
           tabs={ddpConnections}
-          isTabSelected={(item) => connectionTab === item.title}
+          isTabSelected={isTabSelected}
           getTabTitle={(tab) => tab.title}
           getTabContent={getTabContent}
-          onUpdateTabs={updateDdpConnections}
           onSelectTab={(tab) => setConnectionTab(tab.title)}
           onRemoveTab={handleRemoveDdpConnection}
           onAddTab={handleAddDdpConnection}

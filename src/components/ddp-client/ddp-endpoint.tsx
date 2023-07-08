@@ -22,9 +22,16 @@ import useDdpConnectionStore from "@/store"
 import LoadingDots from "../loading-dots"
 import { ServerConnectionRef } from "../server-connection"
 
-const ddpTypes = [
-  { name: "Method", key: "method" },
+// Extract the options enum from options
+// https://stackoverflow.com/a/73825370
+export const ddpTypeOptions = [
+  { name: "Method", key: "method", disabled: false },
   { name: "Subscription", key: "publication", disabled: true },
+] as const
+export type DdpType = (typeof ddpTypeOptions)[number]["key"]
+export const DdpTypeEnum: [DdpType, ...DdpType[]] = [
+  ddpTypeOptions[0].key,
+  ...ddpTypeOptions.slice(0).map((_) => _.key),
 ]
 
 type DdpEndpointProps = {
@@ -214,7 +221,7 @@ const DdpEndpoint = ({
 
   return (
     <div className={isActive ? "block" : "hidden"}>
-      <div className="flex flex-col">
+      <div className="flex flex-col px-3">
         <div className="flex pl-3 pt-2">
           {/* TODO: add modal to read/write documentation */}
           {/* <a
@@ -230,7 +237,7 @@ const DdpEndpoint = ({
               <SelectValue placeholder="Port" />
             </SelectTrigger>
             <SelectContent>
-              {ddpTypes.map((item) => (
+              {ddpTypeOptions.map((item) => (
                 <SelectItem
                   disabled={item.disabled}
                   key={item.key}

@@ -21,7 +21,6 @@ type CloseableTabsProps<T> = {
   onSelectTab: (tab: T) => void
   onRemoveTab: (tab: T) => void
   onAddTab: () => void
-  onUpdateTabs: (tabs: T[]) => void
 }
 
 export default function CloseableTabs<T>({
@@ -32,7 +31,6 @@ export default function CloseableTabs<T>({
   onSelectTab,
   onRemoveTab,
   onAddTab,
-  onUpdateTabs,
   getTabTitle,
   getTabContent,
 }: CloseableTabsProps<T>) {
