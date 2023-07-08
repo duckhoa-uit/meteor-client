@@ -1,16 +1,23 @@
-import React, { useCallback, useEffect, useState } from "react"
-import useDdpConnectionStore from "@/store"
-import { DdpConnection } from "@/store/types"
+import React, { useCallback, useEffect, useState } from "react";
+import useDdpConnectionStore from "@/store";
+import { DdpConnection } from "@/store/types";
 import { Allotment } from "allotment"
 
-import { cn } from "@/lib/utils"
+import "allotment/dist/style.css"
 
-import AsideView from "../aside-view"
+
+
+import { cn } from "@/lib/utils";
+
+
+
+import AsideView from "../aside-view";
 // import HeaderView from './shared/HeaderView';
 // import AsideView from './shared/AsideView';
 
-import CloseableTabs from "../closeable-tabs"
-import Home from "../home"
+import CloseableTabs from "../closeable-tabs";
+import Home from "../home";
+
 
 const LayoutSPA: React.FC = () => {
   const {

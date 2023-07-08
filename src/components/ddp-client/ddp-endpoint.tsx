@@ -1,8 +1,11 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react";
+import useDdpConnectionStore from "@/store"
 import { DdpConnection, Endpoint, EndpointArg } from "@/store/types"
 import { Allotment } from "allotment"
 
 import { Icons } from "../icons"
+import LoadingDots from "../loading-dots"
+import { ServerConnectionRef } from "../server-connection"
 import { Button } from "../ui/button"
 import { Input } from "../ui/input"
 import {
@@ -14,13 +17,6 @@ import {
 } from "../ui/select"
 import Arguments, { ArgumentsRef } from "./arguments"
 import MethodResponse, { MethodResponseRef } from "./method-response"
-
-import "allotment/dist/style.css"
-
-import useDdpConnectionStore from "@/store"
-
-import LoadingDots from "../loading-dots"
-import { ServerConnectionRef } from "../server-connection"
 
 // Extract the options enum from options
 // https://stackoverflow.com/a/73825370
@@ -327,7 +323,7 @@ const DdpEndpoint = ({
       </div>
 
       <Allotment vertical className="h-[calc(100vh-216px)]">
-        <Allotment.Pane preferredSize={"25%"} minSize={200}>
+        <Allotment.Pane preferredSize={"25%"}>
           <Arguments
             ref={argsRef}
             connection={ddpConnection}
