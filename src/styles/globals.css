@@ -110,21 +110,45 @@ body[style*="pointer-events: none"] .overflow-x-auto {
   }
 }
 
-/** Prevent scrolling on body when modal is open */
-body[style*="pointer-events: none"] .overflow-auto,
-body[style*="pointer-events: none"] .overflow-y-auto,
-body[style*="pointer-events: none"] .overflow-x-auto {
-  overflow: hidden !important;
-}
-
-@media (max-width: 640px) {
-  .container {
-    @apply px-4;
-  }
-}
-
 /* EDITOR */
 
 .ReactJSONEditor div.jsoneditor {
   @apply rounded-md border-input;
+}
+
+
+/* MARKDOWN */
+.cm-scroller{
+  @apply font-sans text-sm !important;
+}
+
+.md-editor-toolbar button{
+  @apply text-primary/90 w-6 h-6 !important;
+}
+.md-editor-toolbar button:hover{
+  @apply text-primary/80 bg-muted !important;
+}
+.md-editor-toolbar-warp:not(.md-editor-toolbar-bottom){
+  @apply border-b-inherit !important;
+}
+
+.md-editor{
+  @apply bg-background border border-input rounded-lg !important;
+}
+.md-editor-preview{
+  @apply bg-transparent border-l-inherit !important;
+}
+.cm-editor{
+  @apply text-primary !important;
+
+}
+.cm-editor, .cm-gutters{
+  @apply bg-background border-r-inherit !important;
+}
+.cm-activeLine, .cm-activeLineGutter{
+  @apply bg-transparent !important;
+}
+
+.cm-cursor{
+  @apply border-l-primary !important;
 }

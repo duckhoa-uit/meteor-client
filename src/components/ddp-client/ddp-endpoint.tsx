@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react"
 import useDdpConnectionStore from "@/store"
 import { DdpConnection, Endpoint, EndpointArg } from "@/store/types"
 import { Allotment } from "allotment"
 
+import SaveEndpointDialog from "../endpoint-view/dialogs/save-endpoint"
 import { Icons } from "../icons"
 import LoadingDots from "../loading-dots"
 import { ServerConnectionRef } from "../server-connection"
@@ -31,14 +32,14 @@ export const DdpTypeEnum: [DdpType, ...DdpType[]] = [
 ]
 
 type DdpEndpointProps = {
-  connection: ServerConnectionRef | null
-  ddpConnection: DdpConnection
+  serverConnectionRef: ServerConnectionRef | null
+  connection: DdpConnection
   endpoint: Endpoint
   isActive?: boolean
 }
 const DdpEndpoint = ({
+  serverConnectionRef,
   connection,
-  ddpConnection,
   endpoint,
   isActive = false,
 }: DdpEndpointProps) => {
@@ -93,12 +94,12 @@ const DdpEndpoint = ({
     // TODO: add time for performance
     // const initialTime = performance.now()
 
-    if (!connection?.Meteor) return
+    if (!serverConnectionRef?.Meteor) return
 
     try {
       setSendingRequest(true)
 
-      const methodResponseParsed = await connection.Meteor.call(
+      const methodResponseParsed = await serverConnectionRef.Meteor.call(
         meteorMethod.name,
         ...args
       )
@@ -170,7 +171,6 @@ const DdpEndpoint = ({
 
   const ddp = () => {
     const args = loadArguments(argsRef.current?.args || [])
-    console.log("🚀 ~ file: ddp-endpoint.tsx:168 ~ ddp ~ args:", args)
     if (typeSelected === "method") {
       callMethod(args)
     } else {
@@ -189,10 +189,10 @@ const DdpEndpoint = ({
   //   // Save description logic
   // }
 
-  const saveNameOfEndpoint = (name: string, endpointType: string) => {
+  const saveNameOfEndpoint = (name: string, endpointType: DdpType) => {
     // Save name of endpoint logic
     saveNameOfOpenEndpoint({
-      connectionName: ddpConnection.title,
+      connectionName: connection.title,
       openEndpointId: endpoint.id,
       name,
       endpointType,
@@ -287,37 +287,12 @@ const DdpEndpoint = ({
           </Button>
 
           <div>
-            <Button
-              variant={"outline"}
-              className="ml-2"
-              onClick={openSaveEndpoint}
-            >
-              <Icons.post className="mr-2 h-4 w-4" />
-              Save
-            </Button>
-
-            {/* TODO: add dialog save */}
-            {/* <modal-question ref="saveEndpointRef">
-            <v-text-field v-if="typeSelected==='method'"
-                          @blur="saveNameOfEndpoint(meteorMethod.name,'method')"
-                          v-model="meteorMethod.name" label="* Endpoint name" outlined
-                          dense></v-text-field>
-            <v-text-field v-else v-model="publication.name"
-                          @blur="saveNameOfEndpoint(publication.name,'publication')"
-                          label="* Endpoint name" outlined dense></v-text-field>
-            <vue-simplemde v-model="description.current" :configs="{placeholder:'Endpoint description (Optional)'}"
-                           class="markdown-editor"/>
-            <select-collection-or-folder ref="folderSelectedRef"
-                                         v-bind:connection="ddpConnection"></select-collection-or-folder>
-            <template v-slot:questionButtons>
-              <v-btn color="error" outlined depressed v-on:click="$refs.saveEndpointRef.dialog=false">
-                Cancel
-              </v-btn>
-              <v-btn color="primary" depressed v-on:click="saveEndpoint">
-                Accept
-              </v-btn>
-            </template>
-          </modal-question> */}
+            <SaveEndpointDialog endpoint={endpoint} connection={connection}>
+              <Button variant={"outline"} className="ml-2">
+                <Icons.post className="mr-2 h-4 w-4" />
+                Save
+              </Button>
+            </SaveEndpointDialog>
           </div>
         </div>
       </div>
@@ -326,7 +301,7 @@ const DdpEndpoint = ({
         <Allotment.Pane preferredSize={"25%"}>
           <Arguments
             ref={argsRef}
-            connection={ddpConnection}
+            connection={connection}
             endpoint={endpoint}
           />
         </Allotment.Pane>

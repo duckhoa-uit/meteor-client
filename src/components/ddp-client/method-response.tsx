@@ -1,5 +1,5 @@
-import { forwardRef, useEffect, useImperativeHandle, useState } from "react"
-import MeteormanLogo from "@/assets/images/explosion.gif"
+import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
+import MeteormanLogo from "@/assets/images/meteor-man.webp"
 import JSONEditor from "jsoneditor"
 
 import { cn } from "@/lib/utils"
@@ -15,7 +15,6 @@ const MethodResponse = forwardRef<MethodResponseRef, MethodResponseProps>(
   (props, ref) => {
     const [response, setResponse] = useState<any>("")
     const [elapsedTime, setElapsedTime] = useState<string | null>(null)
-
 
     const formattedElapsedTime = (elapsedTime: number) => {
       if (elapsedTime < 1000) {
@@ -44,8 +43,8 @@ const MethodResponse = forwardRef<MethodResponseRef, MethodResponseProps>(
     })
 
     return (
-      <div className="relative h-full px-3 w-full overflow-auto">
-        <div className="absolute top-[1px] left-0 px-3 z-10 flex w-full justify-between ">
+      <div className="relative h-full w-full overflow-auto px-3">
+        <div className="absolute left-0 top-[1px] z-10 flex w-full justify-between px-3 ">
           <p className="text-sm leading-7 text-muted-foreground [&:not(:first-child)]:mt-6">
             Response
           </p>
@@ -81,7 +80,7 @@ const MethodResponse = forwardRef<MethodResponseRef, MethodResponseProps>(
             alt="Meteorman"
             className="logo"
           />
-          <label className="mt-5 text-sm text-muted-foreground">
+          <label className="text-sm text-muted-foreground">
             Hit send to get a response
           </label>
         </div>

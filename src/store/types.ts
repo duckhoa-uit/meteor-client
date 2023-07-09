@@ -1,4 +1,7 @@
-import { TreeFileType } from "@/components/ui/tree"
+import { TreeFileType } from "@/components/ui/tree";
+import { DdpType } from "@/components/ddp-client/ddp-endpoint";
+
+
 
 import { FileTreeValueType, TreeFile } from "./../components/ui/tree/types"
 
@@ -12,10 +15,10 @@ export type StateProps = {
     connectionName: string,
     collection: Collection
   ) => void
-  removeCollectionOfConnection: (
-    args:{connectionName: string,
-    collectionIndex: number}
-  ) => void
+  removeCollectionOfConnection: (args: {
+    connectionName: string
+    collectionIndex: number
+  }) => void
   addElementToCollection: (args: {
     connectionName: string
     collectionName: string
@@ -48,7 +51,7 @@ export type StateProps = {
     connectionName: string
     openEndpointId: string
     name: string
-    endpointType: string
+    endpointType: DdpType
   }) => void
   saveArgOfOpenEndpoint: ({
     connectionName,
@@ -69,6 +72,15 @@ export type StateProps = {
     connectionName: string
     openEndpointId: string
     argIndex: number
+  }) => void
+  saveOpenEndpointInCollection: ({
+    connectionName,
+    openEndpoint,
+    indexesByFolder,
+  }: {
+    connectionName: string
+    openEndpoint: Endpoint
+    indexesByFolder: number[]
   }) => void
   openEndpointFromCollection: ({
     connectionName,

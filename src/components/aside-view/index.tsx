@@ -73,7 +73,7 @@ const AsideView = ({
 
       <div className="flex flex-col">
         <Tree
-          onClick={activeItem}
+          onFileClick={activeItem}
           value={connection.collections}
           connection={connection}
         />

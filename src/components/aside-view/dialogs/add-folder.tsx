@@ -1,9 +1,10 @@
-import { PropsWithChildren } from "react"
-import useDdpConnectionStore from "@/store"
-import { DdpConnection } from "@/store/types"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
+import { PropsWithChildren } from "react";
+import useDdpConnectionStore from "@/store";
+import { DdpConnection } from "@/store/types";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 import * as z from "zod"
+import { shallow } from "zustand/shallow"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -50,8 +51,12 @@ const AddFolderDialog = ({
   currentPath: string
   onOpenChange: (open: boolean) => void
 }>) => {
-  const { addElementToCollection, addElementToFolder } =
-    useDdpConnectionStore.getState()
+  const { addElementToCollection, addElementToFolder } = useDdpConnectionStore(
+    (state) => ({
+      addElementToCollection: state.addElementToCollection,
+      addElementToFolder: state.addElementToFolder,
+    })
+  )
 
   const form = useForm<z.infer<typeof FormSchema>>({
     defaultValues: {

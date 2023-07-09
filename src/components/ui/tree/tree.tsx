@@ -1,22 +1,28 @@
-import React, { ComponentProps, useMemo } from "react"
-import { DdpConnection } from "@/store/types"
+import React, { ComponentProps, useMemo } from "react";
+import { DdpConnection } from "@/store/types";
 
-import { cn } from "@/lib/utils"
 
-import { TreeConfig, TreeContext } from "./context"
-import TreeFile, { TreeFileProps } from "./file"
-import TreeFolder from "./folder"
-import { sortChildren } from "./helpers"
-import { FileTreeValueType, TreeFile as TTreeFile } from "./types"
+
+import { cn } from "@/lib/utils";
+
+
+
+import { TreeConfig, TreeContext } from "./context";
+import TreeFile, { TreeFileProps } from "./file";
+import TreeFolder from "./folder";
+import { sortChildren } from "./helpers";
+import { FileTreeValueType, TreeFile as TTreeFile } from "./types";
+
 
 const directoryType = FileTreeValueType[0]
 
 interface Props {
   value?: Array<TTreeFile>
   initialExpand?: boolean
-  onClick?: TreeConfig["onFileClick"]
+  onFileClick?: TreeConfig["onFileClick"]
+  onFolderClick?: TreeConfig["onFileClick"]
   className?: string
-  connection: DdpConnection
+  connection?: DdpConnection
 }
 
 const defaultProps = {
@@ -48,7 +54,8 @@ const makeChildren = (value: Array<TTreeFile> = []) => {
 
 const Tree: React.FC<React.PropsWithChildren<TreeProps>> = ({
   children,
-  onClick,
+  onFileClick,
+  onFolderClick,
   initialExpand = false,
   value,
   className,
@@ -56,13 +63,11 @@ const Tree: React.FC<React.PropsWithChildren<TreeProps>> = ({
   ...props
 }: React.PropsWithChildren<TreeProps>) => {
   const isImperative = Boolean(value && value.length > 0)
-  // const onFileClick = (path: string) => {
-  //   onClick && onClick(path)
-  // }
 
   const initialValue: TreeConfig = useMemo(
     () => ({
-      onFileClick: onClick,
+      onFileClick,
+      onFolderClick,
       initialExpand,
       isImperative,
       connection,

@@ -93,7 +93,6 @@ const Arguments = forwardRef<ArgumentsRef, ArgumentsProps>(
     })
 
     const onChange = (item: EndpointArg, index: number) => {
-      console.log("🚀 ~ file: arguments.tsx:94 ~ onChange ~ item:", item)
       const oldArgs = [...args]
       const newArgs = replaceItemAtIndex(oldArgs, index, item)
 
@@ -245,10 +244,6 @@ const Arguments = forwardRef<ArgumentsRef, ArgumentsProps>(
                       mode="code"
                       onChange={() => {
                         const json = editorJsonRef.current?.getJSON()
-                        console.log(
-                          "🚀 ~ file: arguments.tsx:246 ~ json:",
-                          json
-                        )
 
                         if (json !== null && !isEqual(argument.json, json)) {
                           onChange(

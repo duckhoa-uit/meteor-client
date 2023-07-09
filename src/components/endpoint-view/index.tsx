@@ -1,19 +1,17 @@
-import React, {
-  forwardRef,
-  useCallback,
-  useEffect,
-  useImperativeHandle,
-  useRef,
-  useState,
-} from "react"
-import useDdpConnectionStore from "@/store"
-import { DdpConnection, Endpoint } from "@/store/types"
+import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
+import useDdpConnectionStore from "@/store";
+import { DdpConnection, Endpoint } from "@/store/types";
 
-import { cn } from "@/lib/utils"
 
-import CloseableTabs from "../closeable-tabs"
-import DdpEndpoint from "../ddp-client/ddp-endpoint"
-import ServerConnection, { ServerConnectionRef } from "../server-connection"
+
+import { cn } from "@/lib/utils";
+
+
+
+import CloseableTabs from "../closeable-tabs";
+import DdpEndpoint from "../ddp-client/ddp-endpoint";
+import ServerConnection, { ServerConnectionRef } from "../server-connection";
+
 
 interface EndpointViewProps {
   connection: DdpConnection
@@ -42,12 +40,6 @@ const EndpointView = forwardRef<EndpointViewRef, EndpointViewProps>(
     )
 
     const updateSelectedTabHandler = (data: Endpoint) => {
-      console.log(
-        "🚀 ~ file: home.tsx:69 ~ updateSelectedTabHandler ~ data:",
-        data.id,
-        connection.openEndpoints
-      )
-
       const endpointId = connection.openEndpoints.find(
         (openEndpoint) => openEndpoint.id === data.id
       )?.id
@@ -67,10 +59,6 @@ const EndpointView = forwardRef<EndpointViewRef, EndpointViewProps>(
       if (!endpointTab && connection.openEndpoints.length) {
         setEndpointTab(connection.openEndpoints[0].id)
       }
-      console.log(
-        "🚀 ~ file: index.tsx:68 ~ useEffect ~ connection.openEndpoints:",
-        connection.openEndpoints
-      )
     }, [connection.openEndpoints])
 
     const handleAddEndpoint = () => {
@@ -81,17 +69,14 @@ const EndpointView = forwardRef<EndpointViewRef, EndpointViewProps>(
       removeOpenEndpointOfConnection(connection.title, endpoint.id)
     }
 
-    const getTabContent = useCallback(
-      (endpoint: Endpoint, isSelected: boolean) => (
-        <DdpEndpoint
-          key={endpoint.id}
-          isActive={isSelected}
-          connection={serverRef.current}
-          ddpConnection={connection}
-          endpoint={endpoint}
-        />
-      ),
-      []
+    const getTabContent = (endpoint: Endpoint, isSelected: boolean) => (
+      <DdpEndpoint
+        key={endpoint.id}
+        isActive={isSelected}
+        serverConnectionRef={serverRef.current}
+        connection={connection}
+        endpoint={endpoint}
+      />
     )
 
     return (

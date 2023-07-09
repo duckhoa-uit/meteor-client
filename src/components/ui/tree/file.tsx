@@ -91,55 +91,57 @@ const TreeFile: React.FC<React.PropsWithChildren<TreeFileProps>> = ({
           {extra && <span className="self-baseline pl-1 text-xs">{extra}</span>}
         </span>
 
-        <div className="ml-auto">
-          <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
-                ref={dropdownTriggerRef}
-              >
-                <Icons.dotsHorizontal className="h-4 w-4" />
-                <span className="sr-only">Open menu</span>
-              </Button>
-            </DropdownMenuTrigger>
-
-            <DropdownMenuContent
-              hidden={hasOpenDialog}
-              onCloseAutoFocus={(event) => {
-                if (focusRef.current) {
-                  focusRef.current.focus()
-                  focusRef.current = null
-                  event.preventDefault()
-                }
-              }}
-              align="end"
-              className="w-[160px]"
-            >
-              <RemoveTreeItemDialog
-                onOpenChange={handleDialogItemOpenChange}
-                parentLevel={level}
-                collectionName={name}
-                connection={connection}
-                element={item}
-                currentPath={currentPath}
-              >
-                <DropdownMenuItem
-                  className="text-red-600 focus:text-red-500"
-                  onSelect={(e) => {
-                    e.preventDefault()
-                    handleDialogItemSelect()
-                  }}
+        {connection && (
+          <div className="ml-auto">
+            <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
+                  ref={dropdownTriggerRef}
                 >
-                  Delete
-                  <DropdownMenuShortcut>
-                    <Icons.delete className="h-4 w-4" />
-                  </DropdownMenuShortcut>
-                </DropdownMenuItem>
-              </RemoveTreeItemDialog>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+                  <Icons.dotsHorizontal className="h-4 w-4" />
+                  <span className="sr-only">Open menu</span>
+                </Button>
+              </DropdownMenuTrigger>
+
+              <DropdownMenuContent
+                hidden={hasOpenDialog}
+                onCloseAutoFocus={(event) => {
+                  if (focusRef.current) {
+                    focusRef.current.focus()
+                    focusRef.current = null
+                    event.preventDefault()
+                  }
+                }}
+                align="end"
+                className="w-[160px]"
+              >
+                <RemoveTreeItemDialog
+                  onOpenChange={handleDialogItemOpenChange}
+                  parentLevel={level}
+                  collectionName={name}
+                  connection={connection}
+                  element={item}
+                  currentPath={currentPath}
+                >
+                  <DropdownMenuItem
+                    className="text-red-600 focus:text-red-500"
+                    onSelect={(e) => {
+                      e.preventDefault()
+                      handleDialogItemSelect()
+                    }}
+                  >
+                    Delete
+                    <DropdownMenuShortcut>
+                      <Icons.delete className="h-4 w-4" />
+                    </DropdownMenuShortcut>
+                  </DropdownMenuItem>
+                </RemoveTreeItemDialog>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        )}
       </div>
     </div>
   )

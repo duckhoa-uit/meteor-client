@@ -63,7 +63,16 @@ const TreeFolder: React.FC<React.PropsWithChildren<TreeFolderProps>> = ({
     }
   }
 
-  const { initialExpand, isImperative, connection } = useTreeContext()
+  const { initialExpand, isImperative, connection, onFolderClick } =
+    useTreeContext()
+
+  const clickHandler = (event: React.MouseEvent) => {
+    stopPropagation(event)
+    onFolderClick?.(currentPath, item)
+
+    setExpanded(!isExpanded)
+  }
+
   const [isExpanded, setExpanded] = useState<boolean>(initialExpand)
   const { getToggleProps, getCollapseProps } = useCollapse({
     isExpanded,
@@ -72,7 +81,6 @@ const TreeFolder: React.FC<React.PropsWithChildren<TreeFolderProps>> = ({
   useEffect(() => setExpanded(initialExpand), [])
 
   const currentPath = useMemo(() => makeChildPath(name, parentPath), [])
-  const clickHandler = () => setExpanded(!isExpanded)
 
   const nextChildren = setChildrenProps(
     children,
@@ -116,100 +124,102 @@ const TreeFolder: React.FC<React.PropsWithChildren<TreeFolderProps>> = ({
           {extra && <span className="self-baseline pl-1 text-xs">{extra}</span>}
         </span>
 
-        <div className="ml-auto">
-          <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
-            <DropdownMenuTrigger asChild>
-              <Button
-                onClick={(e) => e.stopPropagation()}
-                variant="ghost"
-                className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
-                ref={dropdownTriggerRef}
-              >
-                <Icons.dotsHorizontal className="h-4 w-4" />
-                <span className="sr-only">Open menu</span>
-              </Button>
-            </DropdownMenuTrigger>
-
-            <DropdownMenuContent
-              hidden={hasOpenDialog}
-              onCloseAutoFocus={(event) => {
-                if (focusRef.current) {
-                  focusRef.current.focus()
-                  focusRef.current = null
-                  event.preventDefault()
-                }
-              }}
-              align="end"
-              className="w-[160px]"
-            >
-              <AddFolderDialog
-                onOpenChange={handleDialogItemOpenChange}
-                parentLevel={parentLevel}
-                collectionName={name}
-                connection={connection}
-                element={item}
-                currentPath={currentPath}
-              >
-                <DropdownMenuItem
-                  onSelect={(e) => {
-                    e.preventDefault()
-                    handleDialogItemSelect()
-                  }}
+        {connection && (
+          <div className="ml-auto">
+            <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  onClick={(e) => e.stopPropagation()}
+                  variant="ghost"
+                  className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
+                  ref={dropdownTriggerRef}
                 >
-                  Add folder
-                  <DropdownMenuShortcut>
-                    <Icons.folderPlus className="h-4 w-4" />
-                  </DropdownMenuShortcut>
-                </DropdownMenuItem>
-              </AddFolderDialog>
+                  <Icons.dotsHorizontal className="h-4 w-4" />
+                  <span className="sr-only">Open menu</span>
+                </Button>
+              </DropdownMenuTrigger>
 
-              <AddEndpointDialog
-                onOpenChange={handleDialogItemOpenChange}
-                parentLevel={parentLevel}
-                collectionName={name}
-                connection={connection}
-                element={item}
-                currentPath={currentPath}
+              <DropdownMenuContent
+                hidden={hasOpenDialog}
+                onCloseAutoFocus={(event) => {
+                  if (focusRef.current) {
+                    focusRef.current.focus()
+                    focusRef.current = null
+                    event.preventDefault()
+                  }
+                }}
+                align="end"
+                className="w-[160px]"
               >
-                <DropdownMenuItem
-                  onSelect={(e) => {
-                    e.preventDefault()
-                    handleDialogItemSelect()
-                  }}
+                <AddFolderDialog
+                  onOpenChange={handleDialogItemOpenChange}
+                  parentLevel={parentLevel}
+                  collectionName={name}
+                  connection={connection}
+                  element={item}
+                  currentPath={currentPath}
                 >
-                  Add endpoint
-                  <DropdownMenuShortcut>
-                    <Icons.filePlus className="h-4 w-4" />
-                  </DropdownMenuShortcut>
-                </DropdownMenuItem>
-              </AddEndpointDialog>
+                  <DropdownMenuItem
+                    onSelect={(e) => {
+                      e.preventDefault()
+                      handleDialogItemSelect()
+                    }}
+                  >
+                    Add folder
+                    <DropdownMenuShortcut>
+                      <Icons.folderPlus className="h-4 w-4" />
+                    </DropdownMenuShortcut>
+                  </DropdownMenuItem>
+                </AddFolderDialog>
 
-              <DropdownMenuItem disabled>Export</DropdownMenuItem>
-
-              <RemoveTreeItemDialog
-                onOpenChange={handleDialogItemOpenChange}
-                parentLevel={parentLevel}
-                collectionName={name}
-                connection={connection}
-                element={item}
-                currentPath={currentPath}
-              >
-                <DropdownMenuItem
-                  className="text-red-600 focus:text-red-500"
-                  onSelect={(e) => {
-                    e.preventDefault()
-                    handleDialogItemSelect()
-                  }}
+                <AddEndpointDialog
+                  onOpenChange={handleDialogItemOpenChange}
+                  parentLevel={parentLevel}
+                  collectionName={name}
+                  connection={connection}
+                  element={item}
+                  currentPath={currentPath}
                 >
-                  Delete
-                  <DropdownMenuShortcut>
-                    <Icons.delete className="h-4 w-4" />
-                  </DropdownMenuShortcut>
-                </DropdownMenuItem>
-              </RemoveTreeItemDialog>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+                  <DropdownMenuItem
+                    onSelect={(e) => {
+                      e.preventDefault()
+                      handleDialogItemSelect()
+                    }}
+                  >
+                    Add endpoint
+                    <DropdownMenuShortcut>
+                      <Icons.filePlus className="h-4 w-4" />
+                    </DropdownMenuShortcut>
+                  </DropdownMenuItem>
+                </AddEndpointDialog>
+
+                <DropdownMenuItem disabled>Export</DropdownMenuItem>
+
+                <RemoveTreeItemDialog
+                  onOpenChange={handleDialogItemOpenChange}
+                  parentLevel={parentLevel}
+                  collectionName={name}
+                  connection={connection}
+                  element={item}
+                  currentPath={currentPath}
+                >
+                  <DropdownMenuItem
+                    className="text-red-600 focus:text-red-500"
+                    onSelect={(e) => {
+                      e.preventDefault()
+                      handleDialogItemSelect()
+                    }}
+                  >
+                    Delete
+                    <DropdownMenuShortcut>
+                      <Icons.delete className="h-4 w-4" />
+                    </DropdownMenuShortcut>
+                  </DropdownMenuItem>
+                </RemoveTreeItemDialog>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        )}
       </div>
 
       <div

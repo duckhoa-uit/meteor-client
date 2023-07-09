@@ -1,10 +1,14 @@
 import React from "react";
-import { DdpConnection } from "@/store/types"
+import { DdpConnection } from "@/store/types";
 
-import { TreeFileType } from "./"
+
+
+import { TreeFileType } from "./";
+
 
 export interface TreeConfig {
   onFileClick?: (path: string, item: TreeFileType) => void
+  onFolderClick?: (path: string, item: TreeFileType) => void
   initialExpand: boolean
   isImperative: boolean
   connection?: DdpConnection

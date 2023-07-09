@@ -5,7 +5,7 @@ import { devtools, persist } from "zustand/middleware"
 import { removeItemAtIndex, replaceItemAtIndex } from "@/lib/utils"
 import { TreeFileType } from "@/components/ui/tree"
 
-import { DdpConnection, StateProps } from "./types"
+import { Collection, DdpConnection, Endpoint, StateProps } from "./types"
 
 const useDdpConnectionStore = create<StateProps>((set, get) => ({
   ddpConnections: [],
@@ -139,20 +139,36 @@ const useDdpConnectionStore = create<StateProps>((set, get) => ({
       }
       const connection = cloneDeep(connections[connectionIndex])
 
-      ;(connection.collections || [])
-        .find((collection) => collection.name === collectionName)
-        ?.children?.push({
-          ...element,
-          id: `${collectionName}-${element.name}`,
-        })
+      const collectionIdx = (connection.collections || []).findIndex(
+        (collection) => collection.name === collectionName
+      )
+      if (collectionIdx >= 0) {
+        const oldCollection = connection.collections[collectionIdx]
+        const collection: Collection = {
+          ...oldCollection,
+          children: [
+            ...oldCollection.children,
+            {
+              ...element,
+              id: `${collectionName}-${element.name}`,
+            },
+          ],
+        }
 
-      set({
-        ddpConnections: replaceItemAtIndex(
-          connections,
-          connectionIndex,
-          connection
-        ),
-      })
+        connection.collections = replaceItemAtIndex(
+          connection.collections,
+          collectionIdx,
+          collection
+        )
+
+        set({
+          ddpConnections: replaceItemAtIndex(
+            connections,
+            connectionIndex,
+            connection
+          ),
+        })
+      }
     }
   },
   addElementToFolder: ({
@@ -173,32 +189,32 @@ const useDdpConnectionStore = create<StateProps>((set, get) => ({
 
       const connection = cloneDeep(connections[connectionIndex])
 
-      let folder: TreeFileType | undefined = connection.collections.find(
+      let _folder: TreeFileType | undefined = connection.collections.find(
         (collection) => collection.name === collectionName
       )
 
-      if (folder) {
+      if (_folder) {
         const folderIndexes = []
         for (
           let folderLevel = 0;
           folderLevel < folderNames.length;
           folderLevel++
         ) {
-          if (!folder.children) break
+          if (!_folder.children) break
 
-          const folderIndex: number | undefined = folder.children.findIndex(
+          const folderIndex: number | undefined = _folder.children.findIndex(
             (child) =>
               child.type === "directory" &&
               child.name === folderNames[folderLevel]
           )
           if (folderIndex !== undefined) {
             folderIndexes.push(folderIndex)
-            folder = folder.children[folderIndex]
+            _folder = _folder.children[folderIndex]
           }
         }
 
-        folder.children = [
-          ...(folder.children || []),
+        _folder.children = [
+          ...(_folder.children || []),
           {
             ...element,
             id: `${collectionName}-${folderIndexes
@@ -458,6 +474,97 @@ const useDdpConnectionStore = create<StateProps>((set, get) => ({
       }
     }
   },
+  saveOpenEndpointInCollection: ({
+    connectionName,
+    openEndpoint,
+    indexesByFolder,
+  }) => {
+    const connections = get().ddpConnections
+
+    const connectionIndex = connections.findIndex(
+      (ddpConnection) => ddpConnection.title === connectionName
+    )
+
+    if (connectionIndex >= 0) {
+      const newConnection = cloneDeep(connections[connectionIndex])
+
+      let folder: TreeFileType | undefined =
+        newConnection.collections[indexesByFolder.shift() as number]
+      const collectionName = folder.name
+      let folderIndexes = []
+      for (let folderIndex of indexesByFolder) {
+        folder = folder?.children?.[folderIndex]
+        folderIndexes.push(folderIndex)
+      }
+
+      if (folder && folder.children) {
+        const folderIndexesString = folderIndexes.toString().replaceAll(",", "")
+        const endpointId = `${collectionName}-${
+          indexesByFolder.length ? folderIndexesString + "-" : ""
+        }${openEndpoint.name}`
+
+        const endpoint: TreeFileType = {
+          ...openEndpoint,
+          type: "endpoint",
+          id: endpointId,
+          title: openEndpoint.name,
+        }
+
+        const existsEndpoint = folder.children.find(
+          (element) => element.id === endpoint.id
+        )
+        if (existsEndpoint) {
+          const endpointIndex = folder.children.findIndex(
+            (element) => element.id === endpoint.id
+          )
+          folder.children[endpointIndex] = endpoint
+        } else {
+          folder.children.push(endpoint)
+          const openEndpointIndex = newConnection.openEndpoints.findIndex(
+            (oe) => oe.id === openEndpoint.id
+          )
+          newConnection.openEndpoints[openEndpointIndex] = JSON.parse(
+            JSON.stringify(endpoint)
+          ) as Endpoint
+        }
+
+        set({
+          ddpConnections: replaceItemAtIndex(
+            connections,
+            connectionIndex,
+            newConnection
+          ),
+        })
+      }
+    }
+  },
+  // const saveOpenEndpointInCollection = (state, { connectionName, openEndpoint, indexesByFolder }) => {
+  //   const connection = state.ddpConnections.find(ddpConnection => ddpConnection.title === connectionName);
+  //   let folder = connection.collections[indexesByFolder.shift()];
+  //   const collectionName = folder.name;
+  //   let folderIndexes = [];
+  //   for (let folderIndex of indexesByFolder) {
+  //     folder = folder.children[folderIndex];
+  //     folderIndexes.push(folderIndex);
+  //   }
+  //   const folderIndexesString = folderIndexes.toString().replaceAll(',', '');
+  //   const endpointId = `${ collectionName }-${ indexesByFolder.length ? (folderIndexesString + '-') : '' }${ openEndpoint.name }`;
+  //   const endpoint = {
+  //     ...openEndpoint,
+  //     type: 'endpoint',
+  //     id: endpointId,
+  //     title: openEndpoint.name
+  //   };
+  //   const existsEndpoint = folder.children.find(element => element.id === endpoint.id);
+  //   if (existsEndpoint) {
+  //     const endpointIndex = folder.children.findIndex(element => element.id === endpoint.id);
+  //     folder.children[endpointIndex] = endpoint;
+  //   } else {
+  //     folder.children.push(endpoint);
+  //     const openEndpointIndex = connection.openEndpoints.findIndex(oe => oe.id === openEndpoint.id);
+  //     connection.openEndpoints[openEndpointIndex] = JSON.parse(JSON.stringify(endpoint));
+  //   }
+  // };
 
   openEndpointFromCollection: ({ connectionName, endpoint }) => {
     const connections = get().ddpConnections
@@ -478,18 +585,13 @@ const useDdpConnectionStore = create<StateProps>((set, get) => ({
           title: endpoint.name ?? "New connection",
         })
 
-        console.log("before set")
-        set(
-          {
-            ddpConnections: replaceItemAtIndex(
-              connections,
-              connectionIndex,
-              newConnection
-            ),
-          },
-          true
-        )
-        console.log("after set")
+        set({
+          ddpConnections: replaceItemAtIndex(
+            connections,
+            connectionIndex,
+            newConnection
+          ),
+        })
       }
     }
   },
