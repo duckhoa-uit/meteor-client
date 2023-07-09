@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react"
+import { useCollapse } from "react-collapsed"
 
 import { cn, setChildrenProps } from "@/lib/utils"
 import {
@@ -11,7 +12,6 @@ import {
 import AddEndpointDialog from "@/components/aside-view/dialogs/add-endpoint"
 import AddFolderDialog from "@/components/aside-view/dialogs/add-folder"
 import RemoveTreeItemDialog from "@/components/aside-view/dialogs/remove-item"
-import Expand from "@/components/expand"
 import { Icons } from "@/components/icons"
 
 import { Button } from "../button"
@@ -64,12 +64,15 @@ const TreeFolder: React.FC<React.PropsWithChildren<TreeFolderProps>> = ({
   }
 
   const { initialExpand, isImperative, connection } = useTreeContext()
-  const [expanded, setExpanded] = useState<boolean>(initialExpand)
+  const [isExpanded, setExpanded] = useState<boolean>(initialExpand)
+  const { getToggleProps, getCollapseProps } = useCollapse({
+    isExpanded,
+  })
 
   useEffect(() => setExpanded(initialExpand), [])
 
   const currentPath = useMemo(() => makeChildPath(name, parentPath), [])
-  const clickHandler = () => setExpanded(!expanded)
+  const clickHandler = () => setExpanded(!isExpanded)
 
   const nextChildren = setChildrenProps(
     children,
@@ -87,7 +90,10 @@ const TreeFolder: React.FC<React.PropsWithChildren<TreeFolderProps>> = ({
   return (
     <div
       className={cn("cursor-pointer select-none leading-none", className)}
-      onClick={clickHandler}
+      {...getToggleProps({
+        onClick: clickHandler,
+      })}
+      // onClick={clickHandler}
       {...props}
     >
       <div
@@ -101,7 +107,7 @@ const TreeFolder: React.FC<React.PropsWithChildren<TreeFolderProps>> = ({
       >
         <TreeIndents count={parentLevel} />
         <span className="absolute -left-5 top-1/2 z-10 inline-flex h-4 w-4 -translate-x-1/2 -translate-y-1/2 items-center justify-center">
-          {expanded ? <Icons.minusSquare /> : <Icons.plusSquare />}
+          {isExpanded ? <Icons.minusSquare /> : <Icons.plusSquare />}
         </span>
         <span className="mr-2 inline-flex h-full w-6 items-center justify-center">
           <Icons.folder />
@@ -204,11 +210,14 @@ const TreeFolder: React.FC<React.PropsWithChildren<TreeFolderProps>> = ({
           </DropdownMenu>
         </div>
       </div>
-      <Expand isExpanded={expanded}>
-        <div className="flex h-auto flex-col" onClick={stopPropagation}>
-          {sortedChildren}
-        </div>
-      </Expand>
+
+      <div
+        {...getCollapseProps()}
+        className="flex h-auto flex-col"
+        onClick={stopPropagation}
+      >
+        {sortedChildren}
+      </div>
     </div>
   )
 }
