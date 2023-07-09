@@ -5,40 +5,20 @@ import { simpleDDPLogin } from "simpleddp-plugin-login";
 
 
 
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
-import { Icons } from "./icons"
-import LoadingDots from "./loading-dots"
-import { Button } from "./ui/button"
-import { Input } from "./ui/input"
-import { Label } from "./ui/label"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "./ui/select"
-import { Switch } from "./ui/switch"
-import { useToast } from "./ui/use-toast"
+
+
+import { Icons } from "./icons";
+import LoadingDots from "./loading-dots";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import { Switch } from "./ui/switch";
+import { useToast } from "./ui/use-toast";
+
 
 type ServerConnectionProps = {}
 export type ServerConnectionRef = {
@@ -49,10 +29,6 @@ const authenticationTypes = [
   { name: "none", description: "No auth" },
   { name: "username", description: "User" },
   { name: "email", description: "Email" },
-]
-const protocols = [
-  { name: "ws", description: "WS Protocol" },
-  { name: "wss", description: "WSS Protocol" },
 ]
 
 type ConnectionState = "connecting" | "connected" | "disconnected" | "error"

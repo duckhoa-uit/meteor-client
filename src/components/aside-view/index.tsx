@@ -1,5 +1,6 @@
 import { useState } from "react"
-import { DdpConnection } from "@/store/types"
+import useDdpConnectionStore from "@/store"
+import { DdpConnection, Endpoint } from "@/store/types"
 
 import {
   Tooltip,
@@ -10,43 +11,32 @@ import {
 
 import { Icons } from "../icons"
 import { Button } from "../ui/button"
-import Tree from "../ui/tree"
+import Tree, { TreeFileType } from "../ui/tree"
 import AddCollectionDialog from "./dialogs/add-collection"
 
-const AsideView = ({ connection }: { connection: DdpConnection }) => {
+const AsideView = ({
+  connection,
+  updateSelectedTab,
+}: {
+  connection: DdpConnection
+  updateSelectedTab: (tab: Endpoint) => void
+}) => {
+  const { openEndpointFromCollection } = useDdpConnectionStore.getState()
+
   const [openAddCollectionDialog, setOpenAddCollectionDialog] = useState(false)
 
-  // const searchTree = (element, elementId) => {
-  //   // Code for searching tree
-  //   if (element.id === elementId) {
-  //     return element
-  //   } else if (element.children != null) {
-  //     let result = null
-  //     for (let i = 0; result == null && i < element.children.length; i++) {
-  //       result = searchTree(element.children[i], elementId)
-  //     }
-  //     return result
-  //   }
-  //   return null
-  // }
+  const activeItem = (path: string, item: TreeFileType) => {
+    const itemSelected = { ...item }
+    if (itemSelected && itemSelected.type === "endpoint") {
+      openEndpointFromCollection({
+        connectionName: connection.title,
+        endpoint: itemSelected,
+      })
 
-  // const activeItem = (item) => {
-  //   const itemSelected = item[0]
-  //   if (itemSelected && itemSelected.type === "endpoint") {
-  //     let endpointTemp = null
-  //     for (const collection of connection.collections) {
-  //       endpointTemp = searchTree(collection, itemSelected.id)
-  //       if (endpointTemp) break
-  //     }
-  //     // Code for opening endpoint
-
-  //     openEndpointFromCollection({
-  //       connectionName: connection.title,
-  //       endpoint: endpointTemp,
-  //     })
-  //     // $root.$emit('updateSelectedTab', { ...itemSelected });
-  //   }
-  // }
+      // temporary setTimeout to fix update tab when the endpoint hasn't added to openEndpoints yet
+      setTimeout(() => updateSelectedTab(itemSelected), 0)
+    }
+  }
 
   return (
     <div className="px-4">
@@ -80,8 +70,13 @@ const AsideView = ({ connection }: { connection: DdpConnection }) => {
           </div>
         </div>
       </div>
+
       <div className="flex flex-col">
-        <Tree value={connection.collections} connection={connection} />
+        <Tree
+          onClick={activeItem}
+          value={connection.collections}
+          connection={connection}
+        />
       </div>
     </div>
   )

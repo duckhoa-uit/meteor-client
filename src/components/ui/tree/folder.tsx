@@ -93,7 +93,6 @@ const TreeFolder: React.FC<React.PropsWithChildren<TreeFolderProps>> = ({
       {...getToggleProps({
         onClick: clickHandler,
       })}
-      // onClick={clickHandler}
       {...props}
     >
       <div
@@ -121,6 +120,7 @@ const TreeFolder: React.FC<React.PropsWithChildren<TreeFolderProps>> = ({
           <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
             <DropdownMenuTrigger asChild>
               <Button
+                onClick={(e) => e.stopPropagation()}
                 variant="ghost"
                 className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
                 ref={dropdownTriggerRef}
@@ -195,6 +195,7 @@ const TreeFolder: React.FC<React.PropsWithChildren<TreeFolderProps>> = ({
                 currentPath={currentPath}
               >
                 <DropdownMenuItem
+                  className="text-red-600 focus:text-red-500"
                   onSelect={(e) => {
                     e.preventDefault()
                     handleDialogItemSelect()

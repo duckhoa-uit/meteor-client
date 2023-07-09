@@ -5,17 +5,11 @@ import { devtools, persist } from "zustand/middleware"
 import { removeItemAtIndex, replaceItemAtIndex } from "@/lib/utils"
 import { TreeFileType } from "@/components/ui/tree"
 
-import {
-  Collection,
-  DdpConnection,
-  Endpoint,
-  EndpointArg,
-  StateProps,
-} from "./types"
+import { DdpConnection, StateProps } from "./types"
 
 const useDdpConnectionStore = create<StateProps>((set, get) => ({
   ddpConnections: [],
-  updateDdpConnections: (ddpConnections: DdpConnection[]) => {
+  updateDdpConnections: (ddpConnections) => {
     set({ ddpConnections })
   },
   initializeConnections: () => {
@@ -69,7 +63,7 @@ const useDdpConnectionStore = create<StateProps>((set, get) => ({
 
     set({ ddpConnections: [...connections, newConnection] })
   },
-  removeConnection: (connectionName: string) => {
+  removeConnection: (connectionName) => {
     const connections = get().ddpConnections
 
     if (connections.length > 0) {
@@ -273,7 +267,7 @@ const useDdpConnectionStore = create<StateProps>((set, get) => ({
   },
 
   // ENDPOINTS
-  initializeOpenEndpoints: (connectionName: string) => {
+  initializeOpenEndpoints: (connectionName) => {
     const connections = get().ddpConnections
 
     const connectionIndex = connections.findIndex(
@@ -307,7 +301,7 @@ const useDdpConnectionStore = create<StateProps>((set, get) => ({
       }
     }
   },
-  addOpenEndpointToConnection: (connectionName: string) => {
+  addOpenEndpointToConnection: (connectionName) => {
     const connections = get().ddpConnections
 
     const connectionIndex = connections.findIndex(
@@ -347,10 +341,7 @@ const useDdpConnectionStore = create<StateProps>((set, get) => ({
       })
     }
   },
-  removeOpenEndpointOfConnection: (
-    connectionName: string,
-    openEndpointId: string
-  ) => {
+  removeOpenEndpointOfConnection: (connectionName, openEndpointId) => {
     const connections = get().ddpConnections
 
     const connectionIndex = connections.findIndex(
@@ -381,11 +372,6 @@ const useDdpConnectionStore = create<StateProps>((set, get) => ({
     openEndpointId,
     name,
     endpointType,
-  }: {
-    connectionName: string
-    openEndpointId: string
-    name: string
-    endpointType: string
   }) => {
     const connections = get().ddpConnections
 
@@ -416,17 +402,7 @@ const useDdpConnectionStore = create<StateProps>((set, get) => ({
       }
     }
   },
-  saveArgOfOpenEndpoint: ({
-    connectionName,
-    openEndpointId,
-    index,
-    arg,
-  }: {
-    connectionName: string
-    openEndpointId: string
-    index: number
-    arg: EndpointArg
-  }) => {
+  saveArgOfOpenEndpoint: ({ connectionName, openEndpointId, index, arg }) => {
     const connections = get().ddpConnections
 
     const connectionIndex = connections.findIndex(
@@ -454,15 +430,7 @@ const useDdpConnectionStore = create<StateProps>((set, get) => ({
       }
     }
   },
-  removeArgOfOpenEndpoint: ({
-    connectionName,
-    openEndpointId,
-    argIndex,
-  }: {
-    connectionName: string
-    openEndpointId: string
-    argIndex: number
-  }) => {
+  removeArgOfOpenEndpoint: ({ connectionName, openEndpointId, argIndex }) => {
     const connections = get().ddpConnections
 
     const connectionIndex = connections.findIndex(
@@ -491,13 +459,7 @@ const useDdpConnectionStore = create<StateProps>((set, get) => ({
     }
   },
 
-  openEndpointFromCollection: ({
-    connectionName,
-    endpoint,
-  }: {
-    connectionName: string
-    endpoint: Endpoint
-  }) => {
+  openEndpointFromCollection: ({ connectionName, endpoint }) => {
     const connections = get().ddpConnections
     const connectionIndex = connections.findIndex(
       (ddpConnection) => ddpConnection.title === connectionName
@@ -516,13 +478,18 @@ const useDdpConnectionStore = create<StateProps>((set, get) => ({
           title: endpoint.name ?? "New connection",
         })
 
-        set({
-          ddpConnections: replaceItemAtIndex(
-            connections,
-            connectionIndex,
-            newConnection
-          ),
-        })
+        console.log("before set")
+        set(
+          {
+            ddpConnections: replaceItemAtIndex(
+              connections,
+              connectionIndex,
+              newConnection
+            ),
+          },
+          true
+        )
+        console.log("after set")
       }
     }
   },

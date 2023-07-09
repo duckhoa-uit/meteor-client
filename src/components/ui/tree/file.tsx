@@ -49,7 +49,7 @@ const TreeFile: React.FC<React.PropsWithChildren<TreeFileProps>> = ({
   const currentPath = useMemo(() => makeChildPath(name, parentPath), [])
   const clickHandler = (event: React.MouseEvent) => {
     stopPropagation(event)
-    onFileClick && onFileClick(currentPath)
+    onFileClick && onFileClick(currentPath, item)
   }
 
   const [dropdownOpen, setDropdownOpen] = useState(false)
@@ -125,6 +125,7 @@ const TreeFile: React.FC<React.PropsWithChildren<TreeFileProps>> = ({
                 currentPath={currentPath}
               >
                 <DropdownMenuItem
+                  className="text-red-600 focus:text-red-500"
                   onSelect={(e) => {
                     e.preventDefault()
                     handleDialogItemSelect()
