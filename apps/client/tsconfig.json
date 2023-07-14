@@ -19,9 +19,12 @@
     "useDefineForClassFields": true,
     "paths": {
       "@/*": ["src/*"]
-    }
+    },
+    "rootDir": "src",
+    "outDir": "dist"
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "src-tauri", "dist", ".next"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  // "references": [{ "path": "./tsconfig.node.json" }],
+  "extends": "tsconfig/vite.json"
 }
